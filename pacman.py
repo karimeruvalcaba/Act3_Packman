@@ -1,5 +1,8 @@
 from random import choice
 from turtle import *
+import random
+#faster and change of tiles
+
 
 from freegames import floor, vector
 
@@ -15,6 +18,8 @@ ghosts = [
     [vector(100, -160), vector(-5, 0)],
 ]
 # fmt: off
+
+# Original tiles
 tiles = [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
@@ -27,7 +32,7 @@ tiles = [
     0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
     0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
     0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
-    0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
     0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
     0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0,
     0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0,
@@ -37,8 +42,9 @@ tiles = [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 ]
-# fmt: on
 
+
+# fmt: on
 
 def square(x, y):
     """Draw square using path at (x, y)."""
@@ -53,6 +59,13 @@ def square(x, y):
 
     path.end_fill()
 
+
+def offset(point):
+    """Return offset of point in tiles."""
+    x = (floor(point.x, 20) + 200) // 20
+    y = (180 - floor(point.y, 20)) // 20
+    index = int(x + y * 20)
+    return index
 
 def offset(point):
     """Return offset of point in tiles."""
@@ -121,16 +134,16 @@ def move():
 
     # Update the movement for each ghost
     for point, course in ghosts:
-        if valid(point + course):
-            point.move(course)
+        if valid(point + course * 2):  # Doubling the movement speed
+            point.move(course * 2)
         else:
             # Calculate the direction towards Pacman
             x_diff = pacman.x - point.x
             y_diff = pacman.y - point.y
             if abs(x_diff) > abs(y_diff):
-                plan = vector(5 if x_diff > 0 else -5, 0)
+                plan = vector(10 if x_diff > 0 else -10, 0)  # Doubling the speed here too
             else:
-                plan = vector(0, 5 if y_diff > 0 else -5)
+                plan = vector(0, 10 if y_diff > 0 else -10)  # Doubling the speed here too
             course.x = plan.x
             course.y = plan.y
 
@@ -145,6 +158,7 @@ def move():
             return
 
     ontimer(move, 100)
+
 
 def change(x, y):
     """Change pacman aim if valid."""
